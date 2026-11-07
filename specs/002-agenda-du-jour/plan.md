@@ -104,7 +104,7 @@ Chaque scénario de la spec est prouvé par au moins un test, au niveau le plus 
 
 Six tâches, dans l'ordre des couches. Chaque tâche nomme le test à écrire d'abord et cite les scénarios qu'elle couvre ; elle tient dans un commit.
 
-- [ ] T01 [002-AS6] Écrire d'abord `packages/shared/src/animations.spec.ts` (« 002-AS6: rejects a day that does not exist or an unreadable time »), puis `packages/shared/src/animations.ts` et son export dans `index.ts`
+- [x] T01 [002-AS6] Écrire d'abord `packages/shared/src/animations.spec.ts` (« 002-AS6: rejects a day that does not exist or an unreadable time »), puis `packages/shared/src/animations.ts` et son export dans `index.ts`
 - [ ] T02 [002-AS1, AS4, AS6] Écrire d'abord `apps/api/src/modules/animations/domain/agenda.spec.ts` (« 002-AS1: sorts by start time, then by title », « 002-AS6: rejects an invalid day or time ») et `domain/animation.spec.ts` (« 002-AS4: in progress from the start, until the end excluded »), puis `domain/animation.ts`, `domain/agenda.ts` et `domain/animations.errors.ts`
 - [ ] T03 [002-AS1, AS3, AS5] Écrire d'abord `application/animations.application.spec.ts` (« 002-AS3: keeps only the animations in progress at the given time », « 002-AS5: returns an empty agenda without error »…), puis le port `AnimationRepository`, `InMemoryAnimationRepository` et `GetDayAgenda`
 - [ ] T04 [002-AS2] Écrire d'abord `infra/drizzle-animation.repository.int.spec.ts` (« 002-AS2: lists only the animations starting on the requested day »), puis `animations.schema.ts`, la migration générée, `animation.mapper.ts`, `DrizzleAnimationRepository` et `apps/api/data/animations.json`
