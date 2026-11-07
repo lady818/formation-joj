@@ -4,11 +4,11 @@ import { Label } from '@/components/ui/label';
 import { useDayAgenda } from '../api/animations.queries';
 import { AnimationList } from './animation-list';
 
-/** Aujourd'hui à Dakar (UTC+0), au format `AAAA-MM-JJ`. */
-const today = () => new Date().toISOString().slice(0, 10);
+/** Le jour affiché à l'ouverture : celui des animations de démo (`apps/api/data/animations.json`). */
+const DEFAULT_DATE = '2026-11-01';
 
 export function AgendaPage() {
-  const [date, setDate] = useState(today);
+  const [date, setDate] = useState(DEFAULT_DATE);
   const [at, setAt] = useState('');
   const agenda = useDayAgenda(date, at || undefined);
 

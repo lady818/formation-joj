@@ -22,6 +22,13 @@ const shownTitles = () =>
     .map((item) => item.getAttribute('aria-label'));
 
 describe('AgendaPage', () => {
+  it('002-AS1: opens on 1 November 2026 by default, for the demo', async () => {
+    await renderRoute({ initialEntries: ['/agenda'] });
+
+    expect(await screen.findByLabelText('Jour')).toHaveValue('2026-11-01');
+    expect(await screen.findByRole('listitem', { name: 'Concert de sabar' })).toBeInTheDocument();
+  });
+
   it('002-AS1: shows the day agenda sorted by start time, with places', async () => {
     await openDay('2026-11-01');
 
