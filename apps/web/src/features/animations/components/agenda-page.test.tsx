@@ -4,7 +4,7 @@
  */
 import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { renderRoute } from '@/test/utils';
 
 async function openDay(date: string) {
@@ -54,6 +54,36 @@ describe('AgendaPage', () => {
     expect(
       screen.getByRole('listitem', { name: 'Atelier lutte traditionnelle' }),
     ).toHaveTextContent('Arène nationale');
+  });
+
+  it('002-AS3: fills in the current Dakar day and time with « Maintenant »', async () => {
+    // Seule l'horloge est figée : les minuteurs de React et de userEvent restent réels.
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date('2026-11-01T15:00:00.000Z'));
+    try {
+      const user = userEvent.setup();
+      await renderRoute({ initialEntries: ['/agenda'] });
+      await screen.findByRole('listitem', { name: 'Concert de sabar' });
+
+      await user.click(screen.getByRole('button', { name: 'Maintenant' }));
+
+      expect(screen.getByLabelText('Jour')).toHaveValue('2026-11-01');
+      expect(screen.getByLabelText('En cours à')).toHaveValue('15:00');
+      await waitFor(() => expect(shownTitles()).toEqual(['Atelier lutte traditionnelle']));
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('002-AS1: shows the whole day again with « Tout afficher »', async () => {
+    const user = await openDay('2026-11-01');
+    await user.type(screen.getByLabelText('En cours à'), '15:00');
+    await waitFor(() => expect(shownTitles()).toEqual(['Atelier lutte traditionnelle']));
+
+    await user.click(screen.getByRole('button', { name: 'Tout afficher' }));
+
+    expect(screen.getByLabelText('En cours à')).toHaveValue('');
+    await waitFor(() => expect(shownTitles()).toHaveLength(3));
   });
 
   it('002-AS5: says there is no animation, without an error', async () => {

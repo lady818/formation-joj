@@ -14,6 +14,8 @@ export const dayAgendaQueryOptions = (date: string, at?: string) =>
     queryFn: ({ signal }) => animationsApi.dayAgenda({ date, ...(at ? { at } : {}) }, signal),
     // Tant que le champ « Jour » est vide ou incomplet, rien n'est demandé à l'API.
     enabled: /^\d{4}-\d{2}-\d{2}$/.test(date),
+    // L'agenda se relit chaque minute : une animation ajoutée ou retirée apparaît sans recharger.
+    refetchInterval: 60_000,
   });
 
 export const useDayAgenda = (date: string, at?: string) =>

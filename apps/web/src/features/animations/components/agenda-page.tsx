@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useDayAgenda } from '../api/animations.queries';
@@ -6,6 +7,12 @@ import { AnimationList } from './animation-list';
 
 /** Le jour affiché à l'ouverture : celui des animations de démo (`apps/api/data/animations.json`). */
 const DEFAULT_DATE = '2026-11-01';
+
+/** Le jour (`AAAA-MM-JJ`) et l'heure (`HH:MM`) actuels à Dakar, qui est à UTC+0. */
+function dakarNow(): { date: string; at: string } {
+  const iso = new Date().toISOString();
+  return { date: iso.slice(0, 10), at: iso.slice(11, 16) };
+}
 
 export function AgendaPage() {
   const [date, setDate] = useState(DEFAULT_DATE);
@@ -44,6 +51,21 @@ export function AgendaPage() {
               value={at}
               onChange={(event) => setAt(event.target.value)}
             />
+          </div>
+          <div className="flex flex-wrap gap-2 sm:col-span-2">
+            <Button
+              type="button"
+              onClick={() => {
+                const now = dakarNow();
+                setDate(now.date);
+                setAt(now.at);
+              }}
+            >
+              Maintenant
+            </Button>
+            <Button type="button" variant="outline" disabled={at === ''} onClick={() => setAt('')}>
+              Tout afficher
+            </Button>
           </div>
         </div>
       </section>
