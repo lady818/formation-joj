@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { disciplineKeys, useDeleteDiscipline, useDiscipline } from '../api/disciplines.queries';
-import { CATEGORY_LABELS } from './category-labels';
+import { CATEGORY_LABELS, CATEGORY_TONES } from './category-labels';
 import { DeleteDisciplineButton } from './delete-discipline-button';
 import { DisciplineEditForm } from './discipline-edit-form';
 import { errorMessage } from './error-message';
@@ -30,7 +30,10 @@ export function DisciplineDetailPage({ id }: { id: string }) {
 
   return (
     <div className="flex flex-col gap-6">
-      <Link to="/disciplines" className="text-sm text-muted-foreground hover:underline">
+      <Link
+        to="/disciplines"
+        className="w-fit rounded-full border bg-card px-3 py-1.5 text-sm font-semibold text-muted-foreground transition hover:text-foreground"
+      >
         <span aria-hidden="true">←</span> Toutes les disciplines
       </Link>
       {discipline.isPending && <p className="text-muted-foreground">Chargement…</p>}
@@ -40,10 +43,17 @@ export function DisciplineDetailPage({ id }: { id: string }) {
         </p>
       )}
       {discipline.isSuccess && (
-        <Card>
-          <CardHeader>
+        <Card className="overflow-hidden rounded-3xl pt-0 duration-500 animate-in fade-in slide-in-from-bottom-3">
+          <span aria-hidden="true" className="block h-3 pattern-zigzag" />
+          <CardHeader className="flex items-center gap-4">
+            <span
+              aria-hidden="true"
+              className={`grid size-14 shrink-0 place-items-center rounded-2xl font-display text-2xl font-extrabold ${CATEGORY_TONES[discipline.data.category]}`}
+            >
+              {discipline.data.name.charAt(0).toUpperCase()}
+            </span>
             <CardTitle>
-              <h1 className="text-2xl font-semibold">{discipline.data.name}</h1>
+              <h1 className="text-3xl font-extrabold tracking-tight">{discipline.data.name}</h1>
             </CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col gap-4">

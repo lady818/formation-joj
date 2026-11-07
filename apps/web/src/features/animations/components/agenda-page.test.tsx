@@ -92,4 +92,31 @@ describe('AgendaPage', () => {
     expect(await screen.findByText('Aucune animation.')).toBeInTheDocument();
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
+
+  it('002-AS1: switches day with the day buttons of the Games', async () => {
+    const user = userEvent.setup();
+    await renderRoute({ initialEntries: ['/agenda'] });
+    await screen.findByRole('listitem', { name: 'Concert de sabar' });
+
+    await user.click(screen.getByRole('button', { name: /lun\. 2/i }));
+
+    expect(screen.getByLabelText('Jour')).toHaveValue('2026-11-02');
+    await waitFor(() => expect(shownTitles()).toEqual(['Tournoi de dames']));
+  });
+
+  it('« Y aller » opens the map on that venue and day, not Google Maps', async () => {
+    const user = userEvent.setup();
+    const { router } = await renderRoute({ initialEntries: ['/agenda'] });
+    const lutte = await screen.findByRole('listitem', { name: 'Atelier lutte traditionnelle' });
+
+    await user.click(
+      within(lutte).getByRole('link', { name: 'Voir Arène nationale sur la carte' }),
+    );
+
+    expect(await screen.findByRole('heading', { level: 1, name: 'Carte' })).toBeInTheDocument();
+    expect(router.state.location.pathname).toBe('/carte');
+    const arene = await screen.findByRole('listitem', { name: 'Arène nationale' });
+    expect(within(arene).getByRole('button', { pressed: true })).toBeInTheDocument();
+    expect(await within(arene).findByText('Atelier lutte traditionnelle')).toBeInTheDocument();
+  });
 });

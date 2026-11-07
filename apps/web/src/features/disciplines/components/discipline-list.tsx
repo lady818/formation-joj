@@ -3,7 +3,7 @@ import { Link } from '@tanstack/react-router';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useDeleteDiscipline } from '../api/disciplines.queries';
-import { CATEGORY_LABELS } from './category-labels';
+import { CATEGORY_LABELS, CATEGORY_TONES } from './category-labels';
 import { DeleteDisciplineButton } from './delete-discipline-button';
 import { DisciplineEditForm } from './discipline-edit-form';
 import { errorMessage } from './error-message';
@@ -21,24 +21,39 @@ export function DisciplineList({ disciplines }: { disciplines: DisciplineRespons
         </p>
       )}
       {disciplines.length === 0 ? (
-        <p className="text-muted-foreground">Aucune discipline pour l’instant.</p>
+        <p className="rounded-2xl border border-dashed bg-card p-8 text-center text-muted-foreground">
+          Aucune discipline pour l’instant.
+        </p>
       ) : (
-        <ul aria-label="Disciplines" className="divide-y rounded-md border">
-          {disciplines.map((discipline) => (
-            <li key={discipline.id} aria-label={discipline.name} className="px-4 py-3">
+        <ul aria-label="Disciplines" className="grid gap-3">
+          {disciplines.map((discipline, index) => (
+            <li
+              key={discipline.id}
+              aria-label={discipline.name}
+              style={{ animationDelay: `${index * 60}ms` }}
+              className="rounded-2xl border bg-card px-4 py-3 shadow-sm transition duration-500 animate-in fill-mode-both fade-in slide-in-from-bottom-2 hover:border-primary/30 hover:shadow-md"
+            >
               {editingId === discipline.id ? (
                 <DisciplineEditForm discipline={discipline} onDone={() => setEditingId(null)} />
               ) : (
-                <div className="flex items-center justify-between gap-4">
-                  <Link
-                    to="/disciplines/$disciplineId"
-                    params={{ disciplineId: discipline.id }}
-                    className="font-medium underline-offset-4 hover:underline"
-                  >
-                    {discipline.name}
-                  </Link>
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div className="flex min-w-0 items-center gap-3">
+                    <span
+                      aria-hidden="true"
+                      className={`grid size-10 shrink-0 place-items-center rounded-xl font-display text-lg font-extrabold ${CATEGORY_TONES[discipline.category]}`}
+                    >
+                      {discipline.name.charAt(0).toUpperCase()}
+                    </span>
+                    <Link
+                      to="/disciplines/$disciplineId"
+                      params={{ disciplineId: discipline.id }}
+                      className="font-display text-lg font-bold underline-offset-4 hover:text-primary hover:underline"
+                    >
+                      {discipline.name}
+                    </Link>
+                  </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-sm text-muted-foreground">
+                    <span className="rounded-full bg-muted px-2.5 py-1 text-xs font-semibold text-muted-foreground">
                       {CATEGORY_LABELS[discipline.category]}
                     </span>
                     <Button

@@ -195,4 +195,23 @@ describe('DisciplinesPage', () => {
 
     expect(await screen.findByRole('alert')).toHaveTextContent('Cette discipline n’existe plus.');
   });
+
+  it('000-AS5: narrows the list with the search box and the category filter', async () => {
+    const { user } = await open();
+    await screen.findByRole('list', { name: 'Disciplines' });
+    const shown = () =>
+      within(screen.getByRole('list', { name: 'Disciplines' }))
+        .getAllByRole('listitem')
+        .map((item) => item.getAttribute('aria-label'));
+
+    await user.type(screen.getByLabelText('Rechercher une discipline'), 'LUT');
+    expect(shown()).toEqual(['Lutte']);
+
+    await user.clear(screen.getByLabelText('Rechercher une discipline'));
+    await user.click(screen.getByRole('button', { name: 'Sports nautiques' }));
+    expect(shown()).toEqual(['Natation']);
+
+    await user.click(screen.getByRole('button', { name: 'Sports de précision' }));
+    expect(screen.getByText('Aucune discipline ne correspond à ta recherche.')).toBeInTheDocument();
+  });
 });

@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AgendaRouteImport } from './routes/agenda'
+import { Route as CarteRouteImport } from './routes/carte'
 import { Route as DisciplinesIndexRouteImport } from './routes/disciplines.index'
 import { Route as DisciplinesDisciplineIdRouteImport } from './routes/disciplines.$disciplineId'
 
@@ -22,6 +23,11 @@ const IndexRoute = IndexRouteImport.update({
 const AgendaRoute = AgendaRouteImport.update({
   id: '/agenda',
   path: '/agenda',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CarteRoute = CarteRouteImport.update({
+  id: '/carte',
+  path: '/carte',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DisciplinesIndexRoute = DisciplinesIndexRouteImport.update({
@@ -38,12 +44,14 @@ const DisciplinesDisciplineIdRoute = DisciplinesDisciplineIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/agenda': typeof AgendaRoute
+  '/carte': typeof CarteRoute
   '/disciplines/$disciplineId': typeof DisciplinesDisciplineIdRoute
   '/disciplines/': typeof DisciplinesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/agenda': typeof AgendaRoute
+  '/carte': typeof CarteRoute
   '/disciplines/$disciplineId': typeof DisciplinesDisciplineIdRoute
   '/disciplines': typeof DisciplinesIndexRoute
 }
@@ -51,18 +59,21 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/agenda': typeof AgendaRoute
+  '/carte': typeof CarteRoute
   '/disciplines/$disciplineId': typeof DisciplinesDisciplineIdRoute
   '/disciplines/': typeof DisciplinesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/agenda' | '/disciplines/$disciplineId' | '/disciplines/'
+  fullPaths:
+    '/' | '/agenda' | '/carte' | '/disciplines/$disciplineId' | '/disciplines/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/agenda' | '/disciplines/$disciplineId' | '/disciplines'
+  to: '/' | '/agenda' | '/carte' | '/disciplines/$disciplineId' | '/disciplines'
   id:
     | '__root__'
     | '/'
     | '/agenda'
+    | '/carte'
     | '/disciplines/$disciplineId'
     | '/disciplines/'
   fileRoutesById: FileRoutesById
@@ -70,6 +81,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AgendaRoute: typeof AgendaRoute
+  CarteRoute: typeof CarteRoute
   DisciplinesDisciplineIdRoute: typeof DisciplinesDisciplineIdRoute
   DisciplinesIndexRoute: typeof DisciplinesIndexRoute
 }
@@ -88,6 +100,13 @@ declare module '@tanstack/react-router' {
       path: '/agenda'
       fullPath: '/agenda'
       preLoaderRoute: typeof AgendaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/carte': {
+      id: '/carte'
+      path: '/carte'
+      fullPath: '/carte'
+      preLoaderRoute: typeof CarteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/disciplines/': {
@@ -110,6 +129,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AgendaRoute: AgendaRoute,
+  CarteRoute: CarteRoute,
   DisciplinesDisciplineIdRoute: DisciplinesDisciplineIdRoute,
   DisciplinesIndexRoute: DisciplinesIndexRoute,
 }
