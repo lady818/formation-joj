@@ -10,6 +10,13 @@ function RootLayout() {
         </Link>
         <nav className="flex gap-2">
           <Link
+            to="/agenda"
+            className={buttonVariants({ variant: 'ghost' })}
+            activeProps={{ className: 'underline' }}
+          >
+            Agenda
+          </Link>
+          <Link
             to="/disciplines"
             className={buttonVariants({ variant: 'ghost' })}
             activeProps={{ className: 'underline' }}

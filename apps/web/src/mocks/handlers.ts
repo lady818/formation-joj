@@ -1,4 +1,6 @@
 import {
+  agendaQuerySchema,
+  type AnimationResponse,
   createDisciplineSchema,
   type DisciplineResponse,
   type ProblemDetails,
@@ -65,9 +67,30 @@ const nameTaken = (name: string) =>
 const byName = (a: DisciplineResponse, b: DisciplineResponse) =>
   a.name < b.name ? -1 : a.name > b.name ? 1 : 0;
 
+/** Même règle que l'API : par heure de début, puis par nom. */
+const byStart = (a: AnimationResponse, b: AnimationResponse) =>
+  a.startsAt.localeCompare(b.startsAt) || a.title.localeCompare(b.title, 'fr');
+
 const findDiscipline = (id: string) => fixture.disciplines.find((d) => d.id === id);
 
 export const handlers = [
+  http.get('*/api/animations', async ({ request }) => {
+    const failure = await gate('GET', '/api/animations');
+    if (failure) return failure;
+    const parsed = agendaQuerySchema.safeParse(
+      Object.fromEntries(new URL(request.url).searchParams),
+    );
+    if (!parsed.success) return validationFailed(parsed.error);
+    // Dakar est à UTC+0 : le jour est un jour UTC, début inclus, fin exclue.
+    const { date, at } = parsed.data;
+    const instant = at === undefined ? null : `${date}T${at}:00.000Z`;
+    const agenda = fixture.animations
+      .filter((a) => a.startsAt.slice(0, 10) === date)
+      .filter((a) => instant === null || (a.startsAt <= instant && instant < a.endsAt))
+      .sort(byStart);
+    return HttpResponse.json(agenda);
+  }),
+
   http.get('*/api/disciplines', async () => {
     const failure = await gate('GET', '/api/disciplines');
     if (failure) return failure;

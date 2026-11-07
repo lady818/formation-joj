@@ -118,3 +118,34 @@ describe('mockControl', () => {
     expect(await (await call('/api/disciplines')).json()).toEqual([lutte, natation]);
   });
 });
+
+describe('mock animations API', () => {
+  const titles = async (path: string) => {
+    const response = await call(path);
+    expect(response.status).toBe(200);
+    return ((await response.json()) as { title: string }[]).map((a) => a.title);
+  };
+
+  it('002-AS1: lists the animations of a day, sorted by start time', async () => {
+    expect(await titles('/api/animations?date=2026-11-01')).toEqual([
+      'Initiation au breaking',
+      'Atelier lutte traditionnelle',
+      'Concert de sabar',
+    ]);
+  });
+
+  it('002-AS3: keeps only the animations in progress at the given time', async () => {
+    expect(await titles('/api/animations?date=2026-11-01&at=15:00')).toEqual([
+      'Atelier lutte traditionnelle',
+    ]);
+  });
+
+  it('002-AS6: rejects a day that does not exist with a 400 VALIDATION_FAILED problem', async () => {
+    const response = await call('/api/animations?date=2026-11-31');
+    expect(response.status).toBe(400);
+    expect(await response.json()).toMatchObject({
+      code: 'VALIDATION_FAILED',
+      errors: [expect.objectContaining({ path: 'date' })],
+    });
+  });
+});
