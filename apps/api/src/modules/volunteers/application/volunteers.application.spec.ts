@@ -43,6 +43,20 @@ describe('volunteers (application layer)', () => {
     });
   });
 
+  it.each([
+    [{ startsAt: NINE, endsAt: NOON, capacity: 0 }, 'SLOT_CAPACITY_INVALID'],
+    [{ startsAt: NOON, endsAt: NINE, capacity: 2 }, 'SLOT_ENDS_BEFORE_START'],
+  ])('001-AS2: refuses an invalid slot and stores nothing (%j)', async (input, code) => {
+    const { slots, openSlot } = await setup();
+    const insert = vi.spyOn(slots, 'insert');
+
+    await expect(openSlot.execute(LUTTE_ID, input)).rejects.toMatchObject({
+      code,
+      kind: 'VALIDATION',
+    });
+    expect(insert).not.toHaveBeenCalled();
+  });
+
   it('001-AS3: refuses a slot for an unknown discipline', async () => {
     const { slots, openSlot } = await setup();
     const insert = vi.spyOn(slots, 'insert');
