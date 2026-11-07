@@ -1,6 +1,6 @@
 # 002 — Guide Dakar : agenda du jour, avec filtre « en cours »
 
-**Statut** : Validée
+**Statut** : Implémentée
 **PRD** : specs/prd-guide-dakar.md, TR1
 
 ## Contexte
