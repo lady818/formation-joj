@@ -118,3 +118,10 @@ Six tâches, dans l'ordre des couches. Chaque tâche nomme le test à écrire d'
 - [x] T04 [001-AS1, AS3, AS4, AS7] Écrire d'abord `application/volunteers.application.spec.ts` (« 001-AS3: refuses a slot for an unknown discipline », « 001-AS7: refuses an unknown slot »…), puis le port `SlotRepository`, `InMemorySlotRepository`, `OpenSlot` et `RegisterVolunteer`
 - [x] T05 [001-AS4, AS6] Écrire d'abord `infra/drizzle-slot.repository.int.spec.ts` (« 001-AS6: never registers more volunteers than the capacity, even concurrently »), puis `volunteers.schema.ts`, la migration générée, `slot.mapper.ts` et `DrizzleSlotRepository`
 - [x] T06 [001-AS1, AS2, AS3, AS4, AS5, AS6, AS7] Écrire d'abord `apps/api/test/volunteers.e2e.spec.ts` (« 001-AS6: rejects a third registration (409, SLOT_FULL) »…), puis `volunteers.controller.ts`, `volunteers.module.ts`, l'export de `DisciplineRepository` et l'import dans `app.module.ts`
+
+## 7. Corrections
+
+### Passage 1
+
+- [ ] T07 [001-AS2] Écrire d'abord, dans `apps/api/src/modules/volunteers/application/volunteers.application.spec.ts`, « 001-AS2: refuses an invalid slot and stores nothing » : `OpenSlot` avec une capacité de 0, puis avec une fin avant le début, lève `SLOT_CAPACITY_INVALID` / `SLOT_ENDS_BEFORE_START` et `insert` n'est jamais appelé ; puis corriger le code si besoin. Preuve : relecteur, aucun test AS2 ne vérifie « aucun créneau n'est enregistré » (`apps/api/test/volunteers.e2e.spec.ts:54-63`, `domain/slot.spec.ts:35-52`, `packages/shared/src/volunteers.spec.ts:19-28`).
+- [ ] T08 [001-AS7] Écrire d'abord, dans `apps/api/src/modules/volunteers/infra/drizzle-slot.repository.int.spec.ts`, une assertion qui compte les lignes de `registrations` pour l'identifiant inconnu (0) et vérifie que le callback `register` n'est pas appelé, et la même vérification du callback dans `application/volunteers.application.spec.ts` (« 001-AS7: refuses an unknown slot ») ; puis corriger le code si besoin. Preuve : relecteur, « rien n'est enregistré » n'est pas vérifié (`infra/drizzle-slot.repository.int.spec.ts:85-91`, `application/volunteers.application.spec.ts:85-90`).
