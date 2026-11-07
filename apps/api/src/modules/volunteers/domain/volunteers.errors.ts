@@ -13,6 +13,8 @@ const VOLUNTEER_ERROR_KINDS = {
   REGISTRATION_EMAIL_INVALID: 'VALIDATION',
   /** Le créneau compte déjà autant d'inscrits que sa capacité. */
   SLOT_FULL: 'CONFLICT',
+  /** Aucun créneau n'a cet identifiant. */
+  SLOT_NOT_FOUND: 'NOT_FOUND',
 } as const satisfies Record<string, ErrorKind>;
 
 export type VolunteerErrorCode = keyof typeof VOLUNTEER_ERROR_KINDS;
@@ -21,4 +23,8 @@ export class VolunteerError extends AppError<VolunteerErrorCode> {
   constructor(code: VolunteerErrorCode, message: string, details?: Record<string, unknown>) {
     super(code, VOLUNTEER_ERROR_KINDS[code], message, details);
   }
+}
+
+export function slotNotFound(id: string): VolunteerError {
+  return new VolunteerError('SLOT_NOT_FOUND', `No slot with id ${id}`, { id });
 }
