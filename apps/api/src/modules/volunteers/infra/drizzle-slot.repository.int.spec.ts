@@ -1,10 +1,13 @@
 import { randomUUID } from 'node:crypto';
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { count } from 'drizzle-orm';
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { type DatabaseConnection, openDatabase } from '../../../core/database/database';
 import { DrizzleDisciplineRepository } from '../../disciplines/infra/drizzle-discipline.repository';
 import { Discipline } from '../../disciplines/domain/discipline';
+import type { Registration } from '../domain/registration';
 import { Slot } from '../domain/slot';
 import { DrizzleSlotRepository } from './drizzle-slot.repository';
+import { registrations } from './volunteers.schema';
 
 const volunteer = (name: string) => ({
   id: randomUUID(),
@@ -83,10 +86,15 @@ describe('DrizzleSlotRepository (in-memory PGlite, migrations applied)', () => {
   });
 
   it('001-AS7: returns null for an unknown slot and stores nothing', async () => {
-    expect(
-      await repository.registerInSlot(randomUUID(), (locked) =>
-        locked.register(volunteer('Awa Diop')),
-      ),
-    ).toBeNull();
+    const countAll = async () =>
+      (await connection.db.select({ value: count() }).from(registrations))[0]?.value;
+    const before = await countAll();
+    const register = vi.fn<(locked: Slot) => Registration>((locked) =>
+      locked.register(volunteer('Awa Diop')),
+    );
+
+    expect(await repository.registerInSlot(randomUUID(), register)).toBeNull();
+    expect(register).not.toHaveBeenCalled();
+    expect(await countAll()).toBe(before);
   });
 });

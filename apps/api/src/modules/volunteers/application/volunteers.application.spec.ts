@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { Discipline } from '../../disciplines/domain/discipline';
 import { InMemoryDisciplineRepository } from '../../disciplines/application/testing/in-memory-discipline.repository';
+import { Slot } from '../domain/slot';
 import { InMemorySlotRepository } from './testing/in-memory-slot.repository';
 import { OpenSlot } from './use-cases/open-slot';
 import { RegisterVolunteer } from './use-cases/register-volunteer';
@@ -98,8 +99,12 @@ describe('volunteers (application layer)', () => {
 
   it('001-AS7: refuses an unknown slot', async () => {
     const { registerVolunteer } = await setup();
+    const register = vi.spyOn(Slot.prototype, 'register');
+
     await expect(
       registerVolunteer.execute(UNKNOWN_ID, { name: 'Awa Diop', email: 'awa@example.org' }),
     ).rejects.toMatchObject({ code: 'SLOT_NOT_FOUND', kind: 'NOT_FOUND' });
+    expect(register).not.toHaveBeenCalled();
+    register.mockRestore();
   });
 });
