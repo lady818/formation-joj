@@ -1,4 +1,5 @@
 import { SLOT_MIN_CAPACITY } from '@joj/shared';
+import { type NewRegistration, Registration } from './registration';
 import { VolunteerError } from './volunteers.errors';
 
 export interface SlotProps {
@@ -80,5 +81,18 @@ export class Slot {
 
   get createdAt(): Date {
     return this.props.createdAt;
+  }
+
+  /** Inscrit un bénévole ; refuse avec SLOT_FULL quand la capacité est atteinte. */
+  register(volunteer: Omit<NewRegistration, 'slotId'>): Registration {
+    if (this.props.registeredCount >= this.props.capacity) {
+      throw new VolunteerError('SLOT_FULL', 'This slot is full', {
+        slotId: this.props.id,
+        capacity: this.props.capacity,
+      });
+    }
+    const registration = Registration.create({ ...volunteer, slotId: this.props.id });
+    this.props = { ...this.props, registeredCount: this.props.registeredCount + 1 };
+    return registration;
   }
 }

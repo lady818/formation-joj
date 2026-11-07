@@ -50,4 +50,48 @@ describe('Slot', () => {
       expect.objectContaining({ code: 'SLOT_ENDS_BEFORE_START', kind: 'VALIDATION' }),
     );
   });
+
+  const volunteer = (n: number) => ({
+    id: `0199f5c2-0000-7000-8000-00000000020${n}`,
+    name: `Bénévole ${n}`,
+    email: `benevole${n}@example.org`,
+    now: NOW,
+  });
+
+  it('001-AS4: registers a volunteer and counts one', () => {
+    const slot = open();
+    const registration = slot.register({
+      id: '0199f5c2-0000-7000-8000-000000000201',
+      name: 'Awa Diop',
+      email: 'awa@example.org',
+      now: NOW,
+    });
+    expect(registration).toMatchObject({
+      id: '0199f5c2-0000-7000-8000-000000000201',
+      slotId: SLOT_ID,
+      name: 'Awa Diop',
+      email: 'awa@example.org',
+      createdAt: NOW,
+    });
+    expect(slot.registeredCount).toBe(1);
+  });
+
+  it('001-AS6: refuses a full slot', () => {
+    const slot = open({ capacity: 2 });
+    slot.register(volunteer(1));
+    slot.register(volunteer(2));
+    expect(() => slot.register(volunteer(3))).toThrow(VolunteerError);
+    expect(() => slot.register(volunteer(3))).toThrow(
+      expect.objectContaining({ code: 'SLOT_FULL', kind: 'CONFLICT' }),
+    );
+    expect(slot.registeredCount).toBe(2);
+  });
+
+  it('001-AS5: does not count a refused registration', () => {
+    const slot = open();
+    expect(() => slot.register({ ...volunteer(1), name: ' ' })).toThrow(
+      expect.objectContaining({ code: 'REGISTRATION_NAME_REQUIRED' }),
+    );
+    expect(slot.registeredCount).toBe(0);
+  });
 });
